@@ -17,6 +17,7 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "author")

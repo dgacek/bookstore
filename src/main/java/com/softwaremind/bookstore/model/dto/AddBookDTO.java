@@ -1,8 +1,7 @@
 package com.softwaremind.bookstore.model.dto;
 
-public record BookDTO (
-        long id,
+public record AddBookDTO(
         String title,
         String isbn,
-        AuthorDTO author
+        long authorId
 ) {}
