@@ -41,9 +41,12 @@ public class AuthorService {
     }
 
     @Transactional
-    public Author update(AuthorDTO dto) throws ObjectAlreadyExistsException {
+    public Author update(AuthorDTO dto) throws ObjectNotFoundException, ObjectAlreadyExistsException {
         Author author = authorRepo.findById(dto.id())
                 .orElseThrow(() -> new ObjectNotFoundException(String.format("Author of id=%d does not exist", dto.id())));
+        if (Boolean.TRUE.equals(authorRepo.existsByName(dto.name()))) {
+            throw new ObjectAlreadyExistsException(String.format("Author with name=%s already exists", dto.name()));
+        }
         author.setName(dto.name());
         return authorRepo.save(author);
     }
