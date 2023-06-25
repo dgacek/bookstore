@@ -4,6 +4,7 @@ import com.softwaremind.bookstore.exception.InvalidArgumentException;
 import com.softwaremind.bookstore.exception.ObjectAlreadyExistsException;
 import com.softwaremind.bookstore.exception.ObjectNotFoundException;
 import com.softwaremind.bookstore.model.dto.AddBookDTO;
+import com.softwaremind.bookstore.model.dto.UpdateBookDTO;
 import com.softwaremind.bookstore.model.entity.Author;
 import com.softwaremind.bookstore.model.entity.Book;
 import com.softwaremind.bookstore.model.repo.AuthorRepo;
@@ -50,6 +51,37 @@ public class BookService {
                 .isbn(dto.isbn())
                 .author(author)
                 .build());
+    }
+
+    @Transactional
+    public Book update(UpdateBookDTO dto) throws InvalidArgumentException, ObjectNotFoundException, ObjectAlreadyExistsException {
+
+        if (!isValidIsbn(dto.isbn())) {
+            throw new InvalidArgumentException(String.format("%s is not a valid ISBN", dto.isbn()));
+        }
+
+        Book book = bookRepo.findById(dto.id())
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Book of id=%d does not exist", dto.id())));
+
+        if (Boolean.TRUE.equals(bookRepo.existsByIsbn(dto.isbn())) && !dto.isbn().equals(book.getIsbn())) {
+            throw new ObjectAlreadyExistsException(String.format("Book of isbn=%s already exists", dto.isbn()));
+        }
+
+        Author author = authorRepo.findById(dto.authorId())
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Author of id=%d does not exist", dto.authorId())));
+
+        book.setIsbn(dto.isbn());
+        book.setTitle(dto.title());
+        book.setAuthor(author);
+
+        return bookRepo.save(book);
+    }
+
+    @Transactional
+    public void delete(long id) {
+        Book book = bookRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Book of id=%d does not exist", id)));
+        bookRepo.delete(book);
     }
 
     private boolean isValidIsbn(String isbn) {
