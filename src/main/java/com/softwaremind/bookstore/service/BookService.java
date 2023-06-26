@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -24,8 +25,8 @@ public class BookService {
     private BookRepo bookRepo;
     private AuthorRepo authorRepo;
 
-    public Page<Book> getAll(Pageable pageable) {
-        return bookRepo.findAll(pageable);
+    public Page<Book> getAll(Optional<String> search, Pageable pageable) {
+        return bookRepo.findAllBySearchStringContaining(search.orElse("").toLowerCase().replace(" ", ""), pageable);
     }
 
     public Book getById(long id) throws ObjectNotFoundException {
@@ -50,7 +51,8 @@ public class BookService {
                 .title(dto.title())
                 .isbn(dto.isbn())
                 .author(author)
-                .build());
+                .build()
+                .updateSearchString());
     }
 
     @Transactional
@@ -74,7 +76,7 @@ public class BookService {
         book.setTitle(dto.title());
         book.setAuthor(author);
 
-        return bookRepo.save(book);
+        return bookRepo.save(book.updateSearchString());
     }
 
     @Transactional

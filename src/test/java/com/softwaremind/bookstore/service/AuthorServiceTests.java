@@ -5,7 +5,9 @@ import com.softwaremind.bookstore.exception.ObjectNotFoundException;
 import com.softwaremind.bookstore.model.dto.AddAuthorDTO;
 import com.softwaremind.bookstore.model.dto.AuthorDTO;
 import com.softwaremind.bookstore.model.entity.Author;
+import com.softwaremind.bookstore.model.entity.Book;
 import com.softwaremind.bookstore.model.repo.AuthorRepo;
+import com.softwaremind.bookstore.model.repo.BookRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,9 @@ class AuthorServiceTests {
     @Mock
     AuthorRepo authorRepo;
 
+    @Mock
+    BookRepo bookRepo;
+
     @InjectMocks
     AuthorService authorService;
 
@@ -31,6 +36,9 @@ class AuthorServiceTests {
         AddAuthorDTO dto = new AddAuthorDTO("testname");
 
         Mockito.when(authorRepo.save(Mockito.any(Author.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
+
+        Mockito.when(bookRepo.save(Mockito.any(Book.class)))
                 .then(AdditionalAnswers.returnsFirstArg());
 
         Author created = authorService.add(dto);
@@ -59,6 +67,9 @@ class AuthorServiceTests {
                         .build()));
 
         Mockito.when(authorRepo.save(Mockito.any(Author.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
+
+        Mockito.when(bookRepo.save(Mockito.any(Book.class)))
                 .then(AdditionalAnswers.returnsFirstArg());
 
         Author updated = authorService.update(dto);

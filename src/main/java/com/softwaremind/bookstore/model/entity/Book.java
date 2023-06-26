@@ -25,4 +25,12 @@ public class Book {
 
     @ManyToOne
     private Author author;
+
+    @Column(nullable = false)
+    private String searchString;
+
+    public Book updateSearchString() {
+        this.searchString = (this.title + this.author.getName() + this.isbn).toLowerCase().replace(" ", "");
+        return this;
+    }
 }

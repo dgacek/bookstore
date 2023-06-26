@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @AllArgsConstructor
 public class BookController extends LoggedController {
@@ -20,9 +22,9 @@ public class BookController extends LoggedController {
 
     @GetMapping(path = "/api/v1/books")
     @PageableAsQueryParam
-    public Page<BookDTO> getAll(Pageable pageable, HttpServletRequest request) {
+    public Page<BookDTO> getAll(@RequestParam(name = "search") Optional<String> search, Pageable pageable, HttpServletRequest request) {
         log(request);
-        return bookService.getAll(pageable).map(BookMapper.INSTANCE::toDTO);
+        return bookService.getAll(search, pageable).map(BookMapper.INSTANCE::toDTO);
     }
 
     @GetMapping(path = "/api/v1/books/{id}")

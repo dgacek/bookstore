@@ -6,13 +6,16 @@ import com.softwaremind.bookstore.exception.ObjectNotFoundException;
 import com.softwaremind.bookstore.model.dto.AddAuthorDTO;
 import com.softwaremind.bookstore.model.dto.AuthorDTO;
 import com.softwaremind.bookstore.model.entity.Author;
+import com.softwaremind.bookstore.model.entity.Book;
 import com.softwaremind.bookstore.model.repo.AuthorRepo;
+import com.softwaremind.bookstore.model.repo.BookRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,9 +23,10 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private AuthorRepo authorRepo;
+    private BookRepo bookRepo;
 
-    public Page<Author> getAll(Pageable pageable) {
-        return authorRepo.findAll(pageable);
+    public Page<Author> getAll(Optional<String> search, Pageable pageable) {
+        return authorRepo.findAllBySearchStringContaining(search.orElse("").toLowerCase().replace(" ", ""), pageable);
     }
 
     public Author getById(long id) throws ObjectNotFoundException {
@@ -37,7 +41,8 @@ public class AuthorService {
         }
         return authorRepo.save(Author.builder()
                 .name(dto.name())
-                .build());
+                .build()
+                .updateSearchString());
     }
 
     @Transactional
@@ -48,7 +53,12 @@ public class AuthorService {
             throw new ObjectAlreadyExistsException(String.format("Author with name=%s already exists", dto.name()));
         }
         author.setName(dto.name());
-        return authorRepo.save(author);
+        author.updateSearchString();
+        authorRepo.save(author);
+        for (Book book : author.getBooks()) {
+            bookRepo.save(book.updateSearchString());
+        }
+        return author;
     }
 
     @Transactional
