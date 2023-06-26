@@ -21,7 +21,7 @@ export class DataTableComponent implements OnInit {
     this.refresh();
   }
 
-  private refresh(): void {
+  protected refresh(): void {
     this.bookService.getAll(this.page, this.size, this.sort, this.search)
       .subscribe((result) => this.books = result);
   }

@@ -4,11 +4,13 @@
     <th>Title</th>
     <th>Author</th>
     <th>ISBN</th>
+    <th>Actions</th>
   </tr>
   <tr *ngFor="let book of books?.content">
     <td>{{book.id}}</td>
     <td>{{book.title}}</td>
     <td>{{book.author.name}}</td>
     <td>{{book.isbn}}</td>
+    <td><button (click)="refresh()">button</button></td>
   </tr>
 </table>
