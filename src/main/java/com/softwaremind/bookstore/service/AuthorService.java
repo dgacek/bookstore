@@ -41,8 +41,7 @@ public class AuthorService {
         }
         return authorRepo.save(Author.builder()
                 .name(dto.name())
-                .build()
-                .updateSearchString());
+                .build());
     }
 
     @Transactional
@@ -53,11 +52,11 @@ public class AuthorService {
             throw new ObjectAlreadyExistsException(String.format("Author with name=%s already exists", dto.name()));
         }
         author.setName(dto.name());
-        author.updateSearchString();
         authorRepo.save(author);
         for (Book book : author.getBooks()) {
-            bookRepo.save(book.updateSearchString());
+            book.generateSearchString();
         }
+        bookRepo.saveAll(author.getBooks());
         return author;
     }
 

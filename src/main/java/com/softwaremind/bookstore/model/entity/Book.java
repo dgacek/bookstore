@@ -29,8 +29,9 @@ public class Book {
     @Column(nullable = false)
     private String searchString;
 
-    public Book updateSearchString() {
+    @PrePersist
+    @PreUpdate
+    public void generateSearchString() {
         this.searchString = (this.title + this.author.getName() + this.isbn).toLowerCase().replace(" ", "");
-        return this;
     }
 }

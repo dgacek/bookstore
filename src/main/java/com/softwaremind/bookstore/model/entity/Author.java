@@ -26,8 +26,9 @@ public class Author {
     @Column(nullable = false)
     private String searchString;
 
-    public Author updateSearchString() {
+    @PrePersist
+    @PreUpdate
+    private void generateSearchString() {
         this.searchString = this.name.toLowerCase().replace(" ", "");
-        return this;
     }
 }

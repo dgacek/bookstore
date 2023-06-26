@@ -51,8 +51,7 @@ public class BookService {
                 .title(dto.title())
                 .isbn(dto.isbn())
                 .author(author)
-                .build()
-                .updateSearchString());
+                .build());
     }
 
     @Transactional
@@ -76,7 +75,7 @@ public class BookService {
         book.setTitle(dto.title());
         book.setAuthor(author);
 
-        return bookRepo.save(book.updateSearchString());
+        return bookRepo.save(book);
     }
 
     @Transactional
