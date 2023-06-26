@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @AllArgsConstructor
 public class AuthorController extends LoggedController {
@@ -22,9 +24,9 @@ public class AuthorController extends LoggedController {
 
     @GetMapping(path = "/api/v1/authors")
     @PageableAsQueryParam
-    public Page<AuthorDTO> getAll(Pageable pageable, HttpServletRequest request) {
+    public Page<AuthorDTO> getAll(@RequestParam(name = "search") Optional<String> search, Pageable pageable, HttpServletRequest request) {
         log(request);
-        return authorService.getAll(pageable).map(AuthorMapper.INSTANCE::toDTO);
+        return authorService.getAll(search, pageable).map(AuthorMapper.INSTANCE::toDTO);
     }
 
     @GetMapping(path = "/api/v1/authors/{id}")

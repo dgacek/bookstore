@@ -22,4 +22,12 @@ public class Author {
 
     @OneToMany(mappedBy = "author")
     private List<Book> books;
+
+    @Column(nullable = false)
+    private String searchString;
+
+    public Author updateSearchString() {
+        this.searchString = this.name.toLowerCase().replace(" ", "");
+        return this;
+    }
 }
