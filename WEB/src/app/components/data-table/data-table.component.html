@@ -1,0 +1,153 @@
+<input [(ngModel)]="search">
+<button [disabled]="editModeFlag || deleteModeFlag || addModeFlag" (click)="page = 0; refresh()">search</button>
+<button [disabled]="editModeFlag || deleteModeFlag || addModeFlag" (click)="search = ''; refresh()">clear</button>
+<table aria-label="table of books">
+  <tr>
+    <th>
+      ID
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'id,asc'"
+              (click)="sort = 'id,asc'; refresh()"
+      >
+        asc
+      </button>
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'id,desc'"
+              (click)="sort = 'id,desc'; refresh()"
+      >
+        desc
+      </button>
+    </th>
+    <th>
+      Title
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'title,asc'"
+              (click)="sort = 'title,asc'; refresh()"
+      >
+        asc
+      </button>
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'title,desc'"
+              (click)="sort = 'title,desc'; refresh()"
+      >
+        desc
+      </button>
+    </th>
+    <th>Author</th>
+    <th>ISBN</th>
+    <th>Actions</th>
+  </tr>
+  <tr *ngFor="let book of books?.content"
+      (mouseover)="setMouseover(book.id, book.title, book.isbn, book.author.name)"
+      (click)="setMouseover(book.id, book.title, book.isbn, book.author.name)"
+      (mouseleave)="setMouseover(0, '', '', '')"
+  >
+    <td>{{book.id}}</td>
+
+    <td *ngIf="editModeFlag && !deleteModeFlag && mouseoverId === book.id">
+      <input [(ngModel)]="mouseoverTitle">
+    </td>
+    <td *ngIf="!editModeFlag || (editModeFlag && mouseoverId !== book.id)">
+      {{book.title}}
+    </td>
+
+    <td *ngIf="editModeFlag && !deleteModeFlag && mouseoverId === book.id">
+      <input type="text" list="authors" [formControl]="authorSearchControl">
+      <datalist id="authors">
+        <option *ngFor="let author of authors?.content" [value]="author.name">{{author.name}}</option>
+      </datalist>
+    </td>
+    <td *ngIf="!editModeFlag || (editModeFlag && mouseoverId !== book.id)">
+      {{book.author.name}}
+    </td>
+
+    <td *ngIf="editModeFlag && !deleteModeFlag && mouseoverId === book.id">
+      <input [(ngModel)]="mouseoverIsbn">
+    </td>
+    <td *ngIf="!editModeFlag || (editModeFlag && mouseoverId !== book.id)">
+      {{book.isbn}}
+    </td>
+
+    <td class="actions">
+
+      <button *ngIf="!editModeFlag && !deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="enableEditMode()"
+      >
+        edit
+      </button>
+      <button *ngIf="editModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="updateSelected()"
+      >
+        apply
+      </button>
+      <button *ngIf="deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="deleteSelected()"
+      >
+        delete
+      </button>
+
+      <button *ngIf="!editModeFlag && !deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="deleteModeFlag = true"
+      >
+        delete
+      </button>
+      <button *ngIf="editModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="editModeFlag = false"
+      >
+        cancel
+      </button>
+      <button *ngIf="deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="deleteModeFlag = false"
+      >
+        cancel
+      </button>
+
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <input *ngIf="addModeFlag" [(ngModel)]="mouseoverTitle">
+    </td>
+    <td>
+      <div *ngIf="addModeFlag">
+        <input type="text" list="authors2" [formControl]="authorSearchControl">
+        <datalist id="authors2">
+          <option *ngFor="let author of authors?.content" [value]="author.name">{{author.name}}</option>
+        </datalist>
+      </div>
+    </td>
+    <td>
+      <input *ngIf="addModeFlag" [(ngModel)]="mouseoverIsbn">
+    </td>
+    <td>
+      <button *ngIf="!addModeFlag"
+              [disabled]="editModeFlag || deleteModeFlag"
+              (click)="enableAddMode()"
+      >
+        add
+      </button>
+      <button *ngIf="addModeFlag"
+              (click)="addNew()"
+      >
+        add
+      </button>
+      <button *ngIf="addModeFlag"
+              (click)="addModeFlag = false"
+      >
+        cancel
+      </button>
+    </td>
+  </tr>
+</table>
+page size:
+<input type="number" min="0" [(ngModel)]="size">
+page number:
+<input type="number" min="0" [(ngModel)]="page">
+<button [disabled]="editModeFlag || deleteModeFlag || addModeFlag"
+        (click)="refresh()"
+>
+  go
+</button>

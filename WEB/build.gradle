@@ -1,0 +1,17 @@
+plugins {
+    id 'com.github.node-gradle.node' version '5.0.0'
+}
+
+version '1.0'
+
+node {
+    version = '18.16.0'
+    npmVersion = '9.7.2'
+    download = true
+    workDir = file("${project.buildDir}/node")
+    npmWorkDir = file("${project.buildDir}/npm")
+}
+
+tasks.register('build', NpmTask) {
+    args = ['run', 'build']
+}
