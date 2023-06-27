@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 })
 export class LogService {
 
-  private apiEndpointUrl = `${environment.apiUrl}/logs`;
+  private apiEndpointUrl = `${environment.apiUrl}/requests`;
   constructor(private http: HttpClient) { }
 
   public getRequestCount(): Observable<number> {

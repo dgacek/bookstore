@@ -1,16 +1,16 @@
 <input [(ngModel)]="search">
-<button [disabled]="editModeFlag || deleteModeFlag" (click)="page = 0; refresh()">search</button>
-<button [disabled]="editModeFlag || deleteModeFlag" (click)="search = ''; refresh()">clear</button>
+<button [disabled]="editModeFlag || deleteModeFlag || addModeFlag" (click)="page = 0; refresh()">search</button>
+<button [disabled]="editModeFlag || deleteModeFlag || addModeFlag" (click)="search = ''; refresh()">clear</button>
 <table aria-label="table of books">
   <tr>
     <th>
       ID
-      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'id,asc'"
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'id,asc'"
               (click)="sort = 'id,asc'; refresh()"
       >
         asc
       </button>
-      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'id,desc'"
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'id,desc'"
               (click)="sort = 'id,desc'; refresh()"
       >
         desc
@@ -18,12 +18,12 @@
     </th>
     <th>
       Title
-      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'title,asc'"
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'title,asc'"
               (click)="sort = 'title,asc'; refresh()"
       >
         asc
       </button>
-      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'title,desc'"
+      <button [disabled]="editModeFlag || deleteModeFlag || addModeFlag || sort === 'title,desc'"
               (click)="sort = 'title,desc'; refresh()"
       >
         desc
@@ -106,12 +106,47 @@
 
     </td>
   </tr>
+  <tr>
+    <td></td>
+    <td>
+      <input *ngIf="addModeFlag" [(ngModel)]="mouseoverTitle">
+    </td>
+    <td>
+      <div *ngIf="addModeFlag">
+        <input type="text" list="authors2" [formControl]="authorSearchControl">
+        <datalist id="authors2">
+          <option *ngFor="let author of authors?.content" [value]="author.name">{{author.name}}</option>
+        </datalist>
+      </div>
+    </td>
+    <td>
+      <input *ngIf="addModeFlag" [(ngModel)]="mouseoverIsbn">
+    </td>
+    <td>
+      <button *ngIf="!addModeFlag"
+              [disabled]="editModeFlag || deleteModeFlag"
+              (click)="enableAddMode()"
+      >
+        add
+      </button>
+      <button *ngIf="addModeFlag"
+              (click)="addNew()"
+      >
+        add
+      </button>
+      <button *ngIf="addModeFlag"
+              (click)="addModeFlag = false"
+      >
+        cancel
+      </button>
+    </td>
+  </tr>
 </table>
 page size:
-<input type="number" [(ngModel)]="size">
+<input type="number" min="0" [(ngModel)]="size">
 page number:
-<input type="number" [(ngModel)]="page">
-<button [disabled]="editModeFlag || deleteModeFlag"
+<input type="number" min="0" [(ngModel)]="page">
+<button [disabled]="editModeFlag || deleteModeFlag || addModeFlag"
         (click)="refresh()"
 >
   go

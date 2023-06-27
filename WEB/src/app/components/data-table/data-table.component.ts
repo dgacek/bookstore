@@ -23,6 +23,7 @@ export class DataTableComponent implements OnInit {
   protected search = "";
   protected editModeFlag = false;
   protected deleteModeFlag = false;
+  protected addModeFlag = false;
   protected mouseoverId = 0;
   protected mouseoverTitle = "";
   protected mouseoverIsbn = "";
@@ -48,8 +49,13 @@ export class DataTableComponent implements OnInit {
     this.editModeFlag = true;
   }
 
+  protected enableAddMode() {
+    this.authorSearchControl.setValue("");
+    this.addModeFlag = true;
+  }
+
   protected setMouseover(id: number, title: string, isbn: string, authorName: string) {
-    if (!this.editModeFlag && !this.deleteModeFlag) {
+    if (!this.editModeFlag && !this.deleteModeFlag && !this.addModeFlag) {
       this.mouseoverId = id;
       this.mouseoverTitle = title;
       this.mouseoverIsbn = isbn;
@@ -73,5 +79,18 @@ export class DataTableComponent implements OnInit {
   protected deleteSelected() {
     this.bookService.delete(this.mouseoverId).subscribe(() => this.refresh());
     this.deleteModeFlag = false;
+  }
+
+  protected addNew() {
+    let authorId = this.authors?.content.filter(x => x.name === this.authorSearchControl.getRawValue())[0]?.id;
+    if (authorId === undefined) {
+      this.authorService.add({name: this.authorSearchControl.getRawValue()}).subscribe(response => {
+        authorId = response.id;
+        this.bookService.add({isbn: this.mouseoverIsbn, title: this.mouseoverTitle, authorId: authorId}).subscribe(() => this.refresh());
+      });
+    } else {
+      this.bookService.add({isbn: this.mouseoverIsbn, title: this.mouseoverTitle, authorId: authorId}).subscribe(() => this.refresh());
+    }
+    this.addModeFlag = false;
   }
 }
