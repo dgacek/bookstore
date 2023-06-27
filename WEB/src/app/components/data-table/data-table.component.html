@@ -1,16 +1,118 @@
-<table>
+<input [(ngModel)]="search">
+<button [disabled]="editModeFlag || deleteModeFlag" (click)="page = 0; refresh()">search</button>
+<button [disabled]="editModeFlag || deleteModeFlag" (click)="search = ''; refresh()">clear</button>
+<table aria-label="table of books">
   <tr>
-    <th>ID</th>
-    <th>Title</th>
+    <th>
+      ID
+      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'id,asc'"
+              (click)="sort = 'id,asc'; refresh()"
+      >
+        asc
+      </button>
+      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'id,desc'"
+              (click)="sort = 'id,desc'; refresh()"
+      >
+        desc
+      </button>
+    </th>
+    <th>
+      Title
+      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'title,asc'"
+              (click)="sort = 'title,asc'; refresh()"
+      >
+        asc
+      </button>
+      <button [disabled]="editModeFlag || deleteModeFlag || sort === 'title,desc'"
+              (click)="sort = 'title,desc'; refresh()"
+      >
+        desc
+      </button>
+    </th>
     <th>Author</th>
     <th>ISBN</th>
     <th>Actions</th>
   </tr>
-  <tr *ngFor="let book of books?.content">
+  <tr *ngFor="let book of books?.content"
+      (mouseover)="setMouseover(book.id, book.title, book.isbn, book.author.name)"
+      (click)="setMouseover(book.id, book.title, book.isbn, book.author.name)"
+      (mouseleave)="setMouseover(0, '', '', '')"
+  >
     <td>{{book.id}}</td>
-    <td>{{book.title}}</td>
-    <td>{{book.author.name}}</td>
-    <td>{{book.isbn}}</td>
-    <td><button (click)="refresh()">button</button></td>
+
+    <td *ngIf="editModeFlag && !deleteModeFlag && mouseoverId === book.id">
+      <input [(ngModel)]="mouseoverTitle">
+    </td>
+    <td *ngIf="!editModeFlag || (editModeFlag && mouseoverId !== book.id)">
+      {{book.title}}
+    </td>
+
+    <td *ngIf="editModeFlag && !deleteModeFlag && mouseoverId === book.id">
+      <input type="text" list="authors" [formControl]="authorSearchControl">
+      <datalist id="authors">
+        <option *ngFor="let author of authors?.content" [value]="author.name">{{author.name}}</option>
+      </datalist>
+    </td>
+    <td *ngIf="!editModeFlag || (editModeFlag && mouseoverId !== book.id)">
+      {{book.author.name}}
+    </td>
+
+    <td *ngIf="editModeFlag && !deleteModeFlag && mouseoverId === book.id">
+      <input [(ngModel)]="mouseoverIsbn">
+    </td>
+    <td *ngIf="!editModeFlag || (editModeFlag && mouseoverId !== book.id)">
+      {{book.isbn}}
+    </td>
+
+    <td class="actions">
+
+      <button *ngIf="!editModeFlag && !deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="enableEditMode()"
+      >
+        edit
+      </button>
+      <button *ngIf="editModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="updateSelected()"
+      >
+        apply
+      </button>
+      <button *ngIf="deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="deleteSelected()"
+      >
+        delete
+      </button>
+
+      <button *ngIf="!editModeFlag && !deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="deleteModeFlag = true"
+      >
+        delete
+      </button>
+      <button *ngIf="editModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="editModeFlag = false"
+      >
+        cancel
+      </button>
+      <button *ngIf="deleteModeFlag"
+              [hidden]="mouseoverId !== book.id"
+              (click)="deleteModeFlag = false"
+      >
+        cancel
+      </button>
+
+    </td>
   </tr>
 </table>
+page size:
+<input type="number" [(ngModel)]="size">
+page number:
+<input type="number" [(ngModel)]="page">
+<button [disabled]="editModeFlag || deleteModeFlag"
+        (click)="refresh()"
+>
+  go
+</button>

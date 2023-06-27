@@ -15,11 +15,11 @@ export class AuthorService {
 
   constructor(private http: HttpClient) { }
 
-  public getAll(page: number, size: number, sort: string, search?: string): Observable<AuthorsPage> {
+  public getAll(page?: number, size?: number, sort?: string, search?: string): Observable<AuthorsPage> {
     return this.http.get<AuthorsPage>(this.apiEndpointUrl, {params: {
-        page: page,
-        size: size,
-        sort: sort,
+        ...(page && {page: page}),
+        ...(size && {size: size}),
+        ...(sort && {sort: sort}),
         ...(search && {search: search})
       }});
   }

@@ -1,0 +1,15 @@
+td.actions, th.actions {
+  width: 100px;
+  border: none;
+  border-left: 1px solid;
+}
+
+tr {
+  height: 26px;
+}
+
+table, th, td {
+  border: 1px solid;
+  border-collapse: collapse;
+}
+
