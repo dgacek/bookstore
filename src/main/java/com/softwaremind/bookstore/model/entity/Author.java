@@ -20,7 +20,8 @@ public class Author {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "author")
+    @Singular
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private List<Book> books;
 
     @Column(nullable = false)

@@ -52,11 +52,11 @@ public class AuthorService {
             throw new ObjectAlreadyExistsException(String.format("Author with name=%s already exists", dto.name()));
         }
         author.setName(dto.name());
-        authorRepo.save(author);
-        for (Book book : author.getBooks()) {
-            book.generateSearchString();
+        author = authorRepo.save(author);
+        if (author.getBooks() != null) {
+            author.getBooks().forEach(Book::generateSearchString);
+            bookRepo.saveAll(author.getBooks());
         }
-        bookRepo.saveAll(author.getBooks());
         return author;
     }
 
